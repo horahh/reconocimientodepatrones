@@ -32,16 +32,19 @@ print all_files
 
 ######################################################################
 
+# join all references for learning matrix
+ref_files = eliptic_files + spiral_files
 ## Leemos la imagen como un numpy array
-kk = plt.imread(dir+eliptic_files[0])
+kk = plt.imread(dir+ref_files[0])
 m,n = kk.shape[0:2] #get the size of the images
 print "img size = %d, %d" % (m,n)
 
-eliptic_images = np.array([np.array(plt.imread(dir+eliptic_files[i]).flatten()) for i in range(len(eliptic_files))],'f')
-spiral_images = np.array([np.array(plt.imread(dir+spiral_files[i]).flatten()) for i in range(len(spiral_files))],'f')
+ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
+#eliptic_images = np.array([np.array(plt.imread(dir+eliptic_files[i]).flatten()) for i in range(len(eliptic_files))],'f')
+#spiral_images = np.array([np.array(plt.imread(dir+spiral_files[i]).flatten()) for i in range(len(spiral_files))],'f')
 all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in range(len(all_files))],'f')
 
-matrix = eliptic_images + spiral_images
+matrix = ref_images
 
 ## Leemos la imagen desde la url
 #components = (20,40)
@@ -51,14 +54,21 @@ for i in components:
     ## Nos quedamos con i componentes principales
     pca = PCA(n_components = i)
     ## Ajustamos para reducir las dimensiones
+    print "original matrix len"
+    x,y  = matrix.shape[0:2]
+    print x
+    print y
+    print len(matrix)
     reduced_matrix = pca.fit_transform(matrix)
+    print len(reduced_matrix[0])
 
-    x,y  = reduced_matrix.shape[0:2]
     print "matriz proyectada"
+    x,y  = reduced_matrix.shape[0:2]
     print x
     print y
     ## 'Deshacemos' y dibujamos
     reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
+    print len(reconstructed_matrix[0])
     orig_img = reconstructed_matrix[0].reshape(m,n)
     plt.imshow(orig_img, cmap=plt.cm.Greys_r)
     plt.title(u'nº de PCs = %s' % str(i))

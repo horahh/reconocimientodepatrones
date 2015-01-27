@@ -39,7 +39,7 @@ matrix = normal_images
 
 ## Leemos la imagen desde la url
 #components = (20,40)
-components = (20,40)
+components = [20]
 for i in components:
     ## Nos quedamos con i componentes principales
     pca = PCA(n_components = i)
@@ -62,7 +62,7 @@ for i in components:
     x,y  = projected_matrix.shape[0:2]
 
     distance = np.array([[ euclidean_distance(projected_matrix[j],reduced_matrix[i]) for i in range(15) ] for j in range(15)])
-    print distance
+    #print distance
     c = [ "b", "g", "r","m","c","y","k","b", "g", "r","m","c","y","k","b"]
     for i in range(15):
         plt.plot(range(15), distance[i], c[i]) 
