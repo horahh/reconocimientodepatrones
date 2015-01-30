@@ -34,6 +34,10 @@ sad_images = np.array([np.array(plt.imread(dir+sad_files[i]).flatten()) for i in
 
 matrix = normal_images
 
+print "matrix dimentions"
+for i in matrix:
+    print len(i)
+
 ## Leemos la imagen desde la url
 #components = (20,40)
 components = (20,40)

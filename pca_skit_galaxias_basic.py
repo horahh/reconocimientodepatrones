@@ -46,6 +46,10 @@ all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in
 
 matrix = ref_images
 
+print "matrix dimentions"
+for i in ref_images:
+    print len(i)
+
 ## Leemos la imagen desde la url
 #components = (20,40)
 components = (20,40)
@@ -54,20 +58,17 @@ for i in components:
     ## Nos quedamos con i componentes principales
     pca = PCA(n_components = i)
     ## Ajustamos para reducir las dimensiones
-    print "original matrix len"
     x,y  = matrix.shape[0:2]
-    print x
-    print y
-    print len(matrix)
+    print "original matrix len: (%d,%d)" % (x, y)
     reduced_matrix = pca.fit_transform(matrix)
     print len(reduced_matrix[0])
 
     print "matriz proyectada"
     x,y  = reduced_matrix.shape[0:2]
-    print x
-    print y
+    print "reduced matrix dimentions: %d, %d" % ( x, y )
     ## 'Deshacemos' y dibujamos
     reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
+    print "reconstructed matrix (array) dimention"
     print len(reconstructed_matrix[0])
     orig_img = reconstructed_matrix[0].reshape(m,n)
     plt.imshow(orig_img, cmap=plt.cm.Greys_r)
