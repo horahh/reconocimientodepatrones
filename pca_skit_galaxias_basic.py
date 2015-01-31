@@ -34,6 +34,11 @@ print all_files
 
 # join all references for learning matrix
 ref_files = eliptic_files + spiral_files
+
+print ref_files
+print all_files
+
+
 ## Leemos la imagen como un numpy array
 kk = plt.imread(dir+ref_files[0])
 m,n = kk.shape[0:2] #get the size of the images
@@ -46,44 +51,54 @@ all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in
 
 matrix = ref_images
 
+orig_img = ref_images[0].reshape(m*3,n)
+plt.imshow(orig_img, cmap=plt.cm.Greys_r)
+plt.title(u'nº de PCs = %s' % str(i))
+plt.show()
+
 print "matrix dimentions"
 for i in ref_images:
     print len(i)
 
 ## Leemos la imagen desde la url
 #components = (20,40)
-components = (20,40)
+components = [40] 
 all_size = len(all_images)
-for i in components:
+ref_size = len(ref_images)
+for components in [40]:
     ## Nos quedamos con i componentes principales
-    pca = PCA(n_components = i)
+    pca = PCA(n_components = components)
     ## Ajustamos para reducir las dimensiones
     x,y  = matrix.shape[0:2]
     print "original matrix len: (%d,%d)" % (x, y)
     reduced_matrix = pca.fit_transform(matrix)
     print len(reduced_matrix[0])
 
-    print "matriz proyectada"
+    print "matriz proyectada con set original:"
     x,y  = reduced_matrix.shape[0:2]
     print "reduced matrix dimentions: %d, %d" % ( x, y )
     ## 'Deshacemos' y dibujamos
     reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
     print "reconstructed matrix (array) dimention"
     print len(reconstructed_matrix[0])
-    orig_img = reconstructed_matrix[0].reshape(m,n)
+    orig_img = reconstructed_matrix[0].reshape(m*3,n)
     plt.imshow(orig_img, cmap=plt.cm.Greys_r)
-    plt.title(u'nº de PCs = %s' % str(i))
+    plt.title(u'nº de PCs = %s' % str(components))
     plt.show()
 
     projected_matrix = pca.transform(all_images)
     x,y  = projected_matrix.shape[0:2]
+    print "matriz proyectada con set prueba:"
+    print "reduced matrix dimentions: %d, %d" % ( x, y )
 
-    distance = np.array([[ np.linalg.norm(projected_matrix[j]-reduced_matrix[i]) for i in range(all_size) ] for j in range(all_size)])
+    distance = np.array([[ np.linalg.norm(projected_matrix[j]+reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
     print distance
-    c = [ "b", "g", "r","m","c","y","k","b", "g", "r","m","c","y","k","b"]
+    c = [ "b", "g", "r","m"] #,"c","y","k","b", "g", "r","m","c","y","k","b"]
+    #for i in range(all_size):
     for i in range(all_size):
-        plt.plot(range(all_size), distance[i], c[i]) 
-    plt.show()
+        plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files))
+        plt.plot(range(ref_size), distance[i], c[i%4]) 
+        plt.show()
 
 print "matriz reducida"
 x,y  = kk.shape[0:2]
