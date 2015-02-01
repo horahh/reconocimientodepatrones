@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import os,sys
+from skimage.color import rgb2gray
+from skimage import io, filter
+from skimage import img_as_float
+from skimage.transform import rotate
 
 
 ######################################################################
@@ -49,10 +53,31 @@ ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in
 #spiral_images = np.array([np.array(plt.imread(dir+spiral_files[i]).flatten()) for i in range(len(spiral_files))],'f')
 all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in range(len(all_files))],'f')
 
+#all_images=ref_images
+
 matrix = ref_images
 
-orig_img = ref_images[0].reshape(m*3,n)
+orig_img = ref_images[0].reshape(m,n,3)
+print "min val:" , np.amin(orig_img)
+print "max val:" , np.amax(orig_img)
 plt.imshow(orig_img, cmap=plt.cm.Greys_r)
+plt.show()
+
+
+img_gray = rgb2gray(orig_img.astype(np.uint8))
+plt.imshow(img_gray, cmap=plt.cm.Greys_r)
+plt.show()
+
+
+edges = filter.sobel(img_gray)
+io.imshow(edges)
+io.show()
+
+img_rot = rotate(edges,30)
+plt.imshow(img_rot, cmap=plt.cm.Greys_r)
+plt.show()
+
+#plt.imshow(img_gray, cmap=plt.cm.Greys_r)
 plt.title(u'nº de PCs = %s' % str(i))
 plt.show()
 
@@ -91,12 +116,13 @@ for components in [40]:
     print "matriz proyectada con set prueba:"
     print "reduced matrix dimentions: %d, %d" % ( x, y )
 
-    distance = np.array([[ np.linalg.norm(projected_matrix[j]+reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
+    distance = np.array([[ np.linalg.norm(projected_matrix[j]-reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
     print distance
     c = [ "b", "g", "r","m"] #,"c","y","k","b", "g", "r","m","c","y","k","b"]
     #for i in range(all_size):
     for i in range(all_size):
-        plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files))
+        file_twin = np.argmin(distance[i])
+        plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
         plt.plot(range(ref_size), distance[i], c[i%4]) 
         plt.show()
 
