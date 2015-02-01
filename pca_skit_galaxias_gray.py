@@ -67,7 +67,7 @@ plt.imshow(orig_img, cmap=plt.cm.Greys_r)
 
 img_gray = rgb2gray(orig_img.astype(np.uint8))
 plt.imshow(img_gray, cmap=plt.cm.Greys_r)
-#plt.show()
+plt.show()
 
 
 edges = filter.sobel(img_gray)
@@ -79,19 +79,19 @@ io.imshow(edges)
 gray_image = img_gray
 binary_image = np.where(gray_image > np.mean(gray_image),1.0,0.0)
 io.imshow(binary_image)
-io.show()
+#io.show()
 
 blurred_image = gaussian_filter(gray_image,sigma=3)
 binary_image = np.where(blurred_image > np.mean(blurred_image),1.0,0.0)
 
 io.imshow(binary_image)
-io.show()
+#io.show()
 
 blurred_image = gaussian_filter(gray_image,sigma=15)
 binary_image = np.where(blurred_image > np.mean(blurred_image),1.0,0.0)
 
 io.imshow(binary_image)
-io.show()
+#io.show()
 
 plt.title(u'image 1' )
 plt.plot(range(len(binary_image)), np.sum(binary_image,axis=0), 'r') 
@@ -172,10 +172,14 @@ cov_mat = get_cov(filter_image)
 # eigenvectors and eigenvalues for the from the covariance matrix
 eig_val_cov, eig_vec_cov = np.linalg.eig(cov_mat)
 
-for i in range(len(eig_val_cov)):
-    eigvec_cov = eig_vec_cov[:,i].reshape(1,3).T
+print cov_mat
+print eig_vec_cov
+print "cov x len:", len(cov_mat[0])
+print "cov y len:", len(cov_mat[:,0])
 
-    print('Eigenvector {}: \n{}'.format(i+1, eigvec_sc))
+for i in range(len(eig_val_cov)):
+    eigvec_cov = eig_vec_cov[:,i].reshape(1,2).T
+
     print('Eigenvalue {} from covariance matrix: {}'.format(i+1, eig_val_cov[i]))
     print(40 * '-')
 
@@ -183,20 +187,26 @@ for i in range(len(eig_val_cov)):
 
 
 
-eig_val_sc, eig_vec_sc = np.linalg.eig(img_gray)
-
-print eig_vec_sc
-
-for i in range(len(eig_val_sc)):
-    eigvec_sc = eig_vec_sc[:,i].reshape(1,2).T
-
-    print('Eigenvector {}: \n{}'.format(i+1, eigvec_sc))
-    print('Eigenvalue {} from scatter matrix: {}'.format(i+1, eig_val_sc[i]))
-    print(40 * '-')
-    print np.arctan(eigvec_sc)
-##############################
-
-img_rot = rotate(img_gray,30)
+#eig_val_sc, eig_vec_sc = np.linalg.eig(img_gray)
+#
+#print eig_vec_sc
+#
+#for i in range(len(eig_val_sc)):
+#    eigvec_sc = eig_vec_sc[:,i].reshape(1,2).T
+#
+#    print('Eigenvector {}: \n{}'.format(i+1, eigvec_sc))
+#    print('Eigenvalue {} from scatter matrix: {}'.format(i+1, eig_val_sc[i]))
+#    print(40 * '-')
+#    print np.arctan(eigvec_sc)
+###############################
+max_eigen = np.argmax(eig_val_cov)
+print "max eigen" , max_eigen
+rot_angle = np.arctan(eig_vec_cov[max_eigen][1]/eig_vec_cov[max_eigen][0])
+print eig_vec_cov[max_eigen][1]
+print eig_vec_cov[max_eigen][0]
+rot_angle = np.degrees(rot_angle)
+print "rot angle", rot_angle
+img_rot = rotate(img_gray,-rot_angle)
 plt.imshow(img_rot, cmap=plt.cm.Greys_r)
 plt.show()
 
