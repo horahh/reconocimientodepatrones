@@ -58,7 +58,7 @@ all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in
 
 matrix = ref_images
 
-orig_img = ref_images[0].reshape(m,n,3)
+orig_img = ref_images[2].reshape(m,n,3)
 print "min val:" , np.amin(orig_img)
 print "max val:" , np.amax(orig_img)
 plt.imshow(orig_img, cmap=plt.cm.Greys_r)
@@ -201,7 +201,7 @@ for i in range(len(eig_val_cov)):
 ###############################
 max_eigen = np.argmax(eig_val_cov)
 print "max eigen" , max_eigen
-rot_angle = np.arctan(eig_vec_cov[max_eigen][1]/eig_vec_cov[max_eigen][0])
+rot_angle = np.arctan(eig_vec_cov[max_eigen][0]/eig_vec_cov[max_eigen][1])
 print eig_vec_cov[max_eigen][1]
 print eig_vec_cov[max_eigen][0]
 rot_angle = np.degrees(rot_angle)
