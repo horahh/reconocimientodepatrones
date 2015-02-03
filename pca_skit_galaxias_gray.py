@@ -57,36 +57,37 @@ all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in
 #all_images=ref_images
 
 matrix = ref_images
+def restore_image(flatten_image):
+    orig_img = flatten_image.reshape(m,n,3)
+    #print "min val:" , np.amin(orig_img)
+    #print "max val:" , np.amax(orig_img)
+    plt.imshow(orig_img, cmap=plt.cm.Greys_r)
+    #plt.show()
+    return orig_img
 
-orig_img = ref_images[0].reshape(m,n,3)
-print "min val:" , np.amin(orig_img)
-print "max val:" , np.amax(orig_img)
-plt.imshow(orig_img, cmap=plt.cm.Greys_r)
-#plt.show()
+orig_img = restore_image(ref_images[13])
 
+def convert_to_gray(image):
+    img_gray = rgb2gray(orig_img.astype(np.uint8))
+    #plt.imshow(img_gray, cmap=plt.cm.Greys_r)
+    #plt.show()
+    return img_gray
 
-img_gray = rgb2gray(orig_img.astype(np.uint8))
-plt.imshow(img_gray, cmap=plt.cm.Greys_r)
+gray_img = convert_to_gray(orig_img)
+plt.imshow(gray_img, cmap=plt.cm.Greys_r)
 plt.show()
 
-
-edges = filter.sobel(img_gray)
-io.imshow(edges)
+#edges = filter.sobel(img_gray)
+#io.imshow(edges)
 #io.show()
-#############################
-# eigenvectors and eigenvalues for the from the scatter matrix
 
-gray_image = img_gray
-binary_image = np.where(gray_image > np.mean(gray_image),1.0,0.0)
+def convert_to_binary(gray_image):
+    blurred_image = gaussian_filter(gray_image,sigma=9)
+    return np.where(blurred_image > np.mean(blurred_image),1.0,0.0)
+
+binary_image = convert_to_binary(gray_img)
 io.imshow(binary_image)
-#io.show()
-
-
-blurred_image = gaussian_filter(gray_image,sigma=9)
-binary_image = np.where(blurred_image > np.mean(blurred_image),1.0,0.0)
-
-io.imshow(binary_image)
-#io.show()
+io.show()
 
 plt.title(u'image 1' )
 plt.plot(range(len(binary_image)), np.sum(binary_image,axis=0), 'r') 
@@ -147,9 +148,9 @@ def apply_mask(img, mask):
                 img[x][y] = 0
     return
 
-apply_mask(gray_image,filter_image)
+apply_mask(gray_img,filter_image)
 
-io.imshow(gray_image)
+io.imshow(gray_img)
 io.show()
     
 def get_cov(bin_img):
@@ -201,7 +202,7 @@ print eig_vec_cov[max_eigen][1]
 print eig_vec_cov[max_eigen][0]
 rot_angle = np.degrees(rot_angle)
 print "rot angle", rot_angle
-img_rot = rotate(img_gray,-rot_angle)
+img_rot = rotate(gray_img,-rot_angle)
 plt.imshow(img_rot, cmap=plt.cm.Greys_r)
 plt.show()
 
