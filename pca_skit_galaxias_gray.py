@@ -163,51 +163,24 @@ def get_cov(bin_img):
     coord_vector = np.array(coord_list)
     return np.cov(coord_vector[:,0],coord_vector[:,1])
 
-    
 cov_mat = get_cov(filter_image)
-# eigenvectors and eigenvalues for the from the covariance matrix
-eig_val_cov, eig_vec_cov = np.linalg.eig(cov_mat)
 
-print cov_mat
-print eig_vec_cov
-print "cov x len:", len(cov_mat[0])
-print "cov y len:", len(cov_mat[:,0])
+def rotate_image(gray_image,cov_mat):
+    # eigenvectors and eigenvalues for the from the covariance matrix
+    eig_val_cov, eig_vec_cov = np.linalg.eig(cov_mat)
+    max_eigen = np.argmax(eig_val_cov)
+    print "max eigen" , max_eigen
+    rot_angle = np.arctan(eig_vec_cov[max_eigen][0]/eig_vec_cov[max_eigen][1])
+    print eig_vec_cov[max_eigen][1]
+    print eig_vec_cov[max_eigen][0]
+    rot_angle = np.degrees(rot_angle)
+    print "rot angle", rot_angle
+    return rotate(gray_img,-rot_angle)
 
-for i in range(len(eig_val_cov)):
-    eigvec_cov = eig_vec_cov[:,i].reshape(1,2).T
-
-    print('Eigenvalue {} from covariance matrix: {}'.format(i+1, eig_val_cov[i]))
-    print(40 * '-')
-
-
-
+rot_img = rotate_image(gray_img,cov_mat)
 
 
-#eig_val_sc, eig_vec_sc = np.linalg.eig(img_gray)
-#
-#print eig_vec_sc
-#
-#for i in range(len(eig_val_sc)):
-#    eigvec_sc = eig_vec_sc[:,i].reshape(1,2).T
-#
-#    print('Eigenvector {}: \n{}'.format(i+1, eigvec_sc))
-#    print('Eigenvalue {} from scatter matrix: {}'.format(i+1, eig_val_sc[i]))
-#    print(40 * '-')
-#    print np.arctan(eigvec_sc)
-###############################
-max_eigen = np.argmax(eig_val_cov)
-print "max eigen" , max_eigen
-rot_angle = np.arctan(eig_vec_cov[max_eigen][0]/eig_vec_cov[max_eigen][1])
-print eig_vec_cov[max_eigen][1]
-print eig_vec_cov[max_eigen][0]
-rot_angle = np.degrees(rot_angle)
-print "rot angle", rot_angle
-img_rot = rotate(gray_img,-rot_angle)
-plt.imshow(img_rot, cmap=plt.cm.Greys_r)
-plt.show()
-
-#plt.imshow(img_gray, cmap=plt.cm.Greys_r)
-plt.title(u'nº de PCs = %s' % str(i))
+plt.imshow(rot_img, cmap=plt.cm.Greys_r)
 plt.show()
 
 print "matrix dimentions"
