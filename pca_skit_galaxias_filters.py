@@ -304,7 +304,7 @@ for components in [40]:
     ## Ajustamos para reducir las dimensiones
     x,y  = matrix.shape[0:2]
     print "original matrix len: (%d,%d)" % (x, y)
-    reduced_matrix = pca.fit_transform(matrix)
+    reduced_matrix = pca.fit_transform(ref_images_filtered)
     print len(reduced_matrix[0])
 
     print "matriz proyectada con set original:"
@@ -314,12 +314,12 @@ for components in [40]:
     reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
     print "reconstructed matrix (array) dimension"
     print len(reconstructed_matrix[0])
-    orig_img = reconstructed_matrix[0].reshape(m*3,n)
+    orig_img = reconstructed_matrix[0].reshape(m,n)
     plt.imshow(orig_img, cmap=plt.cm.Greys_r)
     plt.title(u'nº de PCs = %s' % str(components))
     plt.show()
 
-    projected_matrix = pca.transform(all_images)
+    projected_matrix = pca.transform(all_images_filtered)
     x,y  = projected_matrix.shape[0:2]
     print "matriz proyectada con set prueba:"
     print "reduced matrix dimensions: %d, %d" % ( x, y )
@@ -331,7 +331,7 @@ for components in [40]:
     for i in range(all_size):
         file_twin = np.argmin(distance[i])
         plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
-        plt.plot(range(ref_size), distance[i], c[i%4]) 
+        plt.plot(range(1,ref_size+1), distance[i], c[i%4]) 
         plt.show()
 
 print "matriz reducida"
