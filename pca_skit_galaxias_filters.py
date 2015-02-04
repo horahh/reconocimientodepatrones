@@ -204,6 +204,7 @@ def rotate_image(gray_image,cov_mat,view):
 # Pass 1 to view plots or 0 to hide them
 def process_images_filters(ref_images,view):
     print "\nProcessing images through all filters:\n"
+    ref_images_filtered = np.array(np.array([]))
     for i in range(len(ref_images)):
         #Original Image, restore since we flattened it
         original_img = restore_image(ref_images[i])
@@ -252,8 +253,8 @@ def process_images_filters(ref_images,view):
         #fig.savefig('saved/figure_' + '%d.jpg' %i)
         #Flatten images to prepare them for PCA Analysis
         # TODO -- FLATTENED IMAGE ARRAY 
-        #ref_images_filtered = np.array([np.array(rot_img.flatten())],f])         
-    return #ref_images_filtered
+        ref_images_filtered = np.append(ref_images_filtered,np.array(rot_img.flatten()),axis=0)         
+    return ref_images_filtered
 
 def process_images_to_grayscale(all_images,view):
     print "Processing images to grayscale:\n"
