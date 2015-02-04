@@ -28,23 +28,26 @@ eliptic_files.sort()
 spiral_files.sort()
 all_files.sort()
 
-print "\nFiles lists:"
-print
-print eliptic_files
-print
-print spiral_files
-print
-print all_files
-print
-
-######################################################################
-
 # join all references for learning matrix
 ref_files = eliptic_files + spiral_files
 
-print ref_files
-print
-print all_files
+# Prints list of files or not
+def print_image_list(print_list):
+    if print_list:
+        print "\nFiles lists:"
+        print
+        print eliptic_files
+        print
+        print spiral_files
+        print
+        print all_files
+        print
+        print       ref_files
+        print
+        print all_files
+    return
+
+print_image_list(0)
 
 ## Leemos la imagen como un numpy array
 kk = plt.imread(dir+ref_files[0])
@@ -171,19 +174,22 @@ def get_cov(bin_img):
 
 # cov_mat = get_cov(filter_image)
 
-def rotate_image(gray_image,cov_mat):
+def rotate_image(gray_image,cov_mat,view):
     # eigenvectors and eigenvalues for the from the covariance matrix
     eig_val_cov, eig_vec_cov = np.linalg.eig(cov_mat)
     max_eigen = np.argmax(eig_val_cov)
-    print "max eigen" , max_eigen
+    if view:
+        print "max eigen" , max_eigen
     rot_angle = np.arctan(eig_vec_cov[max_eigen][0]/eig_vec_cov[max_eigen][1])
-    print eig_vec_cov[max_eigen][1]
-    print eig_vec_cov[max_eigen][0]
+    if view:
+        print eig_vec_cov[max_eigen][1]
+        print eig_vec_cov[max_eigen][0]
     rot_angle = np.degrees(rot_angle)
-    print "rot angle", rot_angle
+    if view:
+        print "rot angle", rot_angle
     return rotate(gray_image,-rot_angle)
 
-# rot_img = rotate_image(gray_img,cov_mat)
+# rot_img = rotate_image(gray_img,cov_mat,1)
 
 
 # plt.imshow(rot_img, cmap=plt.cm.Greys_r)
@@ -196,8 +202,8 @@ def rotate_image(gray_image,cov_mat):
 
 ## PROCESS ALL IMAGES WITH ALL FILTERS
 # Pass 1 to view plots or 0 to hide them
-def process_all_images_filters(ref_images,view):
-    print "Processing all images:\n"
+def process_images_filters(ref_images,view):
+    print "\nProcessing images through all filters:\n"
     for i in range(len(ref_images)):
         #Original Image, restore since we flattened it
         original_img = restore_image(ref_images[i])
@@ -236,15 +242,49 @@ def process_all_images_filters(ref_images,view):
         #Covariance Matrix    
         cov_mat = get_cov(filter_image)
         #Rotated image at adequate axis
-        rot_img = rotate_image(gray_image,cov_mat)
+        rot_img = rotate_image(gray_image,cov_mat,0)
         if view:
             plt.imshow(rot_img, cmap=plt.cm.Greys_r)
             plt.title(u'Filtered Gray Scale Aligned to Axis : Image # %d' %i)
             plt.show()
-    return 
+        ##Save Figures
+        #fig = plt.figure()
+        #fig.savefig('saved/figure_' + '%d.jpg' %i)
+        #Flatten images to prepare them for PCA Analysis
+        # TODO -- FLATTENED IMAGE ARRAY 
+        #ref_images_filtered = np.array([np.array(rot_img.flatten())],f])         
+    return #ref_images_filtered
 
-process_all_images_filters(matrix,1)
+def process_images_to_grayscale(all_images,view):
+    print "Processing images to grayscale:\n"
+    for i in range(len(all_images)):
+        #Original Image, restore since we flattened it
+        original_img = restore_image(all_images[i])
+        # Gray Image
+        gray_image = convert_to_gray(original_img)
+        if view:
+            io.imshow(gray_image)
+            io.show()
+        # TODO -- GRAYSCALE FLATTENNED ARRAY
+        #inner_array = np.array(gray_image.flatten())    
+    #all_images_grayscale = np.array(inner_array,'f') 
+    return #all_images_grayscale
 
+
+## ---------------  IMAGE PRE-PROCESSING CALLS ---------------  ## 
+
+#Call to process reference images through all filters: grayscale, binary, mask and axis rotation
+process_images_filters(matrix,0)
+
+#Process all available image sets to grayscale
+process_images_to_grayscale(all_images,0)
+
+## Leemos la imagen como un numpy array
+#kk = plt.imread(dir+ref_files[0])
+#m,n = kk.shape[0:2] #get the size of the images
+#ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
+
+## ---------------  PCA ANALYSIS OF FILTERERED & GRAYSCALE IMAGES ---------------  ## 
 ## Leemos la imagen desde la url
 #components = (20,40)
 # #COMENTO DESDE ACA PARA ABAJO
