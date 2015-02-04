@@ -202,59 +202,63 @@ def rotate_image(gray_image,cov_mat,view):
 
 ## PROCESS ALL IMAGES WITH ALL FILTERS
 # Pass 1 to view plots or 0 to hide them
-def process_images_filters(ref_images,view):
+def process_images_filters(ref_image,view):
     print "\nProcessing images through all filters:\n"
     ref_images_filtered = np.array(np.array([]))
-    for i in range(len(ref_images)):
-        #Original Image, restore since we flattened it
-        original_img = restore_image(ref_images[i])
-        #Gray Image
-        # io.imshow(gray_img)
-        # io.show()
+    #for i in range(len(ref_images)):
+    #Original Image, restore since we flattened it
+    original_img = restore_image(ref_image)
+    #Gray Image
+    # io.imshow(gray_img)
+    # io.show()
 
-    	gray_image = convert_to_gray(original_img)
-    	if view:
-           plt.imshow(gray_image, cmap=plt.cm.Greys_r)
-    	   plt.title('Unfiltered Gray Scale : Image # %d' %i)
-    	   plt.show()
-           plt.clf()
-        #Binary Image
-        binary_image = convert_to_binary(gray_image)
-        if view:
-            io.imshow(binary_image)
-            io.show()
-        # Overlapping areas
-            plt.title(u'Graph of overlapping Areas : Image # %d' %i )
-            plt.plot(range(len(binary_image)), np.sum(binary_image,axis=0), 'r') 
-            plt.plot(range(len(binary_image)), np.sum(binary_image,axis=1), 'g') 
-            plt.show()
-        #Find black coordinates
-        black_coordinates = boundary_find(binary_image)
-        #Filtered Image
-        filter_image = black_boundary(binary_image, black_coordinates)
-        if view:
-            io.imshow(filter_image)
-            io.show()
-        #Applied Mask
-        apply_mask(gray_image,filter_image)
-        if view:
-            io.imshow(gray_image)
-            io.show()
-        #Covariance Matrix    
-        cov_mat = get_cov(filter_image)
-        #Rotated image at adequate axis
-        rot_img = rotate_image(gray_image,cov_mat,0)
-        if view:
-            plt.imshow(rot_img, cmap=plt.cm.Greys_r)
-            plt.title(u'Filtered Gray Scale Aligned to Axis : Image # %d' %i)
-            plt.show()
+    gray_image = convert_to_gray(original_img)
+    if view:
+        plt.imshow(gray_image, cmap=plt.cm.Greys_r)
+        plt.title('Unfiltered Gray Scale : Image # %d' %i)
+        plt.show()
+        plt.clf()
+    #Binary Image
+    binary_image = convert_to_binary(gray_image)
+    if view:
+        io.imshow(binary_image)
+        io.show()
+    # Overlapping areas
+        plt.title(u'Graph of overlapping Areas : Image # %d' %i )
+        plt.plot(range(len(binary_image)), np.sum(binary_image,axis=0), 'r') 
+        plt.plot(range(len(binary_image)), np.sum(binary_image,axis=1), 'g') 
+        plt.show()
+    #Find black coordinates
+    black_coordinates = boundary_find(binary_image)
+    #Filtered Image
+    filter_image = black_boundary(binary_image, black_coordinates)
+    if view:
+        io.imshow(filter_image)
+        io.show()
+    #Applied Mask
+    apply_mask(gray_image,filter_image)
+    if view:
+        io.imshow(gray_image)
+        io.show()
+    #Covariance Matrix    
+    cov_mat = get_cov(filter_image)
+    #Rotated image at adequate axis
+    rot_img = rotate_image(gray_image,cov_mat,0)
+    if view:
+        plt.imshow(rot_img, cmap=plt.cm.Greys_r)
+        plt.title(u'Filtered Gray Scale Aligned to Axis : Image # %d' %i)
+        plt.show()
         ##Save Figures
         #fig = plt.figure()
         #fig.savefig('saved/figure_' + '%d.jpg' %i)
         #Flatten images to prepare them for PCA Analysis
         # TODO -- FLATTENED IMAGE ARRAY 
-        ref_images_filtered = np.append(ref_images_filtered,np.array(rot_img.flatten()),axis=0)         
-    return ref_images_filtered
+        #print "max val:" , np.amax(rot_img.flatten())
+        #ref_images_filtered = np.append(ref_images_filtered,np.array(rot_img.flatten()))         
+    #print "max val:" , np.amax(ref_images_filtered[1])
+    #x,y  = ref_images_filtered.shape[0:2]
+    #print x,y
+    return rot_img.flatten() 
 
 def process_images_to_grayscale(all_images,view):
     print "Processing images to grayscale:\n"
@@ -276,10 +280,12 @@ def process_images_to_grayscale(all_images,view):
 ## ---------------  IMAGE PRE-PROCESSING CALLS ---------------  ## 
 
 #Call to process reference images through all filters: grayscale, binary, mask and axis rotation
-process_images_filters(matrix,0)
+ref_images_filtered = np.array([process_images_filters(matrix[i],0) for i in range(len(ref_files))],'f')
+print "max val:" , np.amax(ref_images_filtered[1])
 
-#Process all available image sets to grayscale
-process_images_to_grayscale(all_images,0)
+ref_images_filtered = np.array([process_images_filters(all_images[i],0) for i in range(len(ref_files))],'f')
+#process_images_filters(matrix,0)
+
 
 ## Leemos la imagen como un numpy array
 #kk = plt.imread(dir+ref_files[0])
