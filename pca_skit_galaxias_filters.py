@@ -241,7 +241,7 @@ def process_images_filters(ref_image,view):
         io.imshow(gray_image)
         io.show()
     #Covariance Matrix    
-    cov_mat = get_cov(filter_image)
+    cov_mat = get_cov(gray_image)
     #Rotated image at adequate axis
     rot_img = rotate_image(gray_image,cov_mat,0)
     if view:
@@ -258,6 +258,9 @@ def process_images_filters(ref_image,view):
     #print "max val:" , np.amax(ref_images_filtered[1])
     #x,y  = ref_images_filtered.shape[0:2]
     #print x,y
+    rot_img = gaussian_filter(rot_img,sigma=1)
+    #io.imshow(rot_img)
+    #io.show()
     return rot_img.flatten() 
 
 def process_images_to_grayscale(all_images,view):
@@ -327,12 +330,15 @@ for components in [40]:
     distance = np.array([[ np.linalg.norm(projected_matrix[j]-reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
     print distance
     c = [ "b", "g", "r","m"] #,"c","y","k","b", "g", "r","m","c","y","k","b"]
-    #for i in range(all_size):
     for i in range(all_size):
         file_twin = np.argmin(distance[i])
-        plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
-        plt.plot(range(1,ref_size+1), distance[i], c[i%4]) 
-        plt.show()
+        print ref_files[file_twin],all_files[i]
+    
+    #for i in range(all_size):
+    #    file_twin = np.argmin(distance[i])
+    #    plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
+    #    plt.plot(range(1,ref_size+1), distance[i], c[i%4]) 
+    #    plt.show()
 
 print "matriz reducida"
 x,y  = kk.shape[0:2]
