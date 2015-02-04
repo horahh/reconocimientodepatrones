@@ -23,6 +23,8 @@ eliptic_files.sort()
 spiral_files.sort()
 all_files.sort()
 
+dir_elipticas = "images/elipticas_train/"
+
 # Training images
 elipticas_train_files = os.listdir("images/elipticas_train")
 espirales_train_files = os.listdir("images/espirales_train")
@@ -58,7 +60,8 @@ def print_image_list(print_list):
 print_image_list(0)
 
 ## Leemos la imagen como un numpy array
-kk = plt.imread(dir+ref_files[0])
+#kk = plt.imread(dir+ref_files[0])
+kk = plt.imread(dir_elipticas + elipticas_train_files[0])
 m,n = kk.shape[0:2] #get the size of the images
 print "img size = %d, %d" % (m,n)
 
