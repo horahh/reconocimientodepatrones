@@ -19,17 +19,25 @@ eliptic_files = [ elem for elem in files if "eliptica" in elem]
 spiral_files = [ elem for elem in files if "spiral" in elem]
 all_files = [ elem for elem in files ]
 
-# remove the train images
-#sa = ( set( all ) - set(spiral) ) #- set( eliptic)
-
-#all = list( sa)
-
 eliptic_files.sort()
 spiral_files.sort()
 all_files.sort()
 
+# Training images
+elipticas_train_files = os.listdir("images/elipticas_train")
+espirales_train_files = os.listdir("images/espirales_train")
+elipticas_train_files.sort()
+espirales_train_files.sort()
+
+# Test images
+elipticas_test_files = os.listdir("images/elipticas_test")
+espirales_test_files = os.listdir("images/espirales_test")
+elipticas_test_files.sort()
+espirales_test_files.sort()
+
 # join all references for learning matrix
-ref_files = eliptic_files + spiral_files
+#ref_files = eliptic_files + spiral_files
+ref_files = elipticas_train_files + espirales_train_files
 
 # Prints list of files or not
 def print_image_list(print_list):
