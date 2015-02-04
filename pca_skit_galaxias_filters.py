@@ -203,7 +203,7 @@ def rotate_image(gray_image,cov_mat,view):
 ## PROCESS ALL IMAGES WITH ALL FILTERS
 # Pass 1 to view plots or 0 to hide them
 def process_images_filters(ref_image,view):
-    print "\nProcessing images through all filters:\n"
+    #print "\nProcessing images through all filters:\n"
     ref_images_filtered = np.array(np.array([]))
     #for i in range(len(ref_images)):
     #Original Image, restore since we flattened it
@@ -279,77 +279,76 @@ def process_images_to_grayscale(all_images,view):
 
 ## ---------------  IMAGE PRE-PROCESSING CALLS ---------------  ## 
 
+
 #Call to process reference images through all filters: grayscale, binary, mask and axis rotation
+print "Filtering all images..."
+all_images_filtered = np.array([process_images_filters(all_images[i],0) for i in range(len(all_files))],'f')
+
+#Call to process reference images through all filters: grayscale, binary, mask and axis rotation
+print "Filtering reference images..."
 ref_images_filtered = np.array([process_images_filters(matrix[i],0) for i in range(len(ref_files))],'f')
-print "max val:" , np.amax(ref_images_filtered[1])
-
-ref_images_filtered = np.array([process_images_filters(all_images[i],0) for i in range(len(ref_files))],'f')
-#process_images_filters(matrix,0)
+#print "max val:" , np.amax(ref_images_filtered[1])
 
 
-## Leemos la imagen como un numpy array
-#kk = plt.imread(dir+ref_files[0])
-#m,n = kk.shape[0:2] #get the size of the images
+# ---------------  PCA ANALYSIS OF FILTERERED & GRAYSCALE IMAGES ---------------  ## 
+print "Starting PCA Analysis..."
+# Leemos la imagen desde la url
+components = (20,40)
+#COMENTO DESDE ACA PARA ABAJO
+components = [40] 
+all_size = len(all_images_filtered)
+ref_size = len(ref_images_filtered)
+for components in [40]:
+    ## Nos quedamos con i componentes principales
+    pca = PCA(n_components = components)
+    ## Ajustamos para reducir las dimensiones
+    x,y  = matrix.shape[0:2]
+    print "original matrix len: (%d,%d)" % (x, y)
+    reduced_matrix = pca.fit_transform(matrix)
+    print len(reduced_matrix[0])
 
+    print "matriz proyectada con set original:"
+    x,y  = reduced_matrix.shape[0:2]
+    print "reduced matrix dimentions: %d, %d" % ( x, y )
+    ## 'Deshacemos' y dibujamos   
+    reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
+    print "reconstructed matrix (array) dimension"
+    print len(reconstructed_matrix[0])
+    orig_img = reconstructed_matrix[0].reshape(m*3,n)
+    plt.imshow(orig_img, cmap=plt.cm.Greys_r)
+    plt.title(u'nº de PCs = %s' % str(components))
+    plt.show()
 
-## ---------------  PCA ANALYSIS OF FILTERERED & GRAYSCALE IMAGES ---------------  ## 
-## Leemos la imagen desde la url
-#components = (20,40)
-# #COMENTO DESDE ACA PARA ABAJO
-# components = [40] 
-# all_size = len(all_images_gray)
-# ref_size = len(ref_images_filtered)
-# for components in [40]:
-#     ## Nos quedamos con i componentes principales
-#     pca = PCA(n_components = components)
-#     ## Ajustamos para reducir las dimensiones
-#     x,y  = matrix.shape[0:2]
-#     print "original matrix len: (%d,%d)" % (x, y)
-#     reduced_matrix = pca.fit_transform(matrix)
-#     print len(reduced_matrix[0])
+    projected_matrix = pca.transform(all_images)
+    x,y  = projected_matrix.shape[0:2]
+    print "matriz proyectada con set prueba:"
+    print "reduced matrix dimensions: %d, %d" % ( x, y )
 
-#     print "matriz proyectada con set original:"
-#     x,y  = reduced_matrix.shape[0:2]
-#     print "reduced matrix dimentions: %d, %d" % ( x, y )
-#     ## 'Deshacemos' y dibujamos   
-#     reconstructed_matrix  = pca.inverse_transform(reduced_matrix)
-#     print "reconstructed matrix (array) dimension"
-#     pr        if view:int len(reconstructed_matrix[0])
-#     orig_img =    econstructed_matrix[0].reshape(m*3,n)
-    #     plt           mshow(orig_img, cmap=plt.cm.Greys_r)
-#     plt.title(u'nº de PCs = %s' % str(components))
-#     plt.show()
+    distance = np.array([[ np.linalg.norm(projected_matrix[j]-reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
+    print distance
+    c = [ "b", "g", "r","m"] #,"c","y","k","b", "g", "r","m","c","y","k","b"]
+    #for i in range(all_size):
+    for i in range(all_size):
+        file_twin = np.argmin(distance[i])
+        plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
+        plt.plot(range(ref_size), distance[i], c[i%4]) 
+        plt.show()
 
-#     projected_matrix = pca.transform(all_images)
-#     x,y  = projected_matrix.shape[0:2]
-#     print "matriz proyectada con set prueba:"
-#     print "reduced matrix dimensions: %d, %d" % ( x, y )
+print "matriz reducida"
+x,y  = kk.shape[0:2]
+print x
+print y
+print np.linalg.norm(kk.T[0])
 
-#     distance = np.array([[ np.linalg.norm(projected_matrix[j]-reduced_matrix[i]) for i in range(ref_size) ] for j in range(all_size)])
-#     print distance
-#     c = [ "b", "g", "r","m"] #,"c","y","k","b", "g", "r","m","c","y","k","b"]
-#     #for i in range(all_size):
-#     for i in range(all_size):
-#         file_twin = np.argmin(distance[i])
-#         plt.title(u'%s, nº de PCs = %s\n%s' % (all_files[i], str(components), ref_files[file_twin]))
-#         plt.plot(range(ref_size), distance[i], c[i%4]) 
-#         plt.show()
-
-# print "matriz reducida"
-# x,y  = kk.shape[0:2]
-# print x
-# print y
-# print np.linalg.norm(kk.T[0])
-
-# pca = PCA()
-# pca.fit(matrix)
-# # cortamos para ver los primeros 50 valores solamente
-# # que corresponden a los valores mas significativos
-# varianza = pca.explained_variance_ratio_[:50]
-# var_acum= np.cumsum(varianza)
-# plt.plot(range(len(varianza)), varianza,"r")
-# plt.plot(range(len(varianza)), var_acum,"b")
-# plt.show()
+pca = PCA()
+pca.fit(matrix)
+# cortamos para ver los primeros 50 valores solamente
+# que corresponden a los valores mas significativos
+varianza = pca.explained_variance_ratio_[:50]
+var_acum= np.cumsum(varianza)
+plt.plot(range(len(varianza)), varianza,"r")
+plt.plot(range(len(varianza)), var_acum,"b")
+plt.show()
 
 
 
