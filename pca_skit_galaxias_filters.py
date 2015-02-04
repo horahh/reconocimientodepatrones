@@ -265,11 +265,12 @@ def process_images_to_grayscale(all_images,view):
         if view:
             io.imshow(gray_image)
             io.show()
-        # TODO -- GRAYSCALE FLATTENNED ARRAY
+        #GRAYSCALE FLATTENNED ARRAY
         #inner_array = np.array(gray_image.flatten())    
-    #all_images_grayscale = np.array(inner_array,'f') 
+        #all_images_grayscale = np.array(inner_array,'f') 
     return #all_images_grayscale
 
+#ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
 
 ## ---------------  IMAGE PRE-PROCESSING CALLS ---------------  ## 
 
@@ -282,15 +283,15 @@ process_images_to_grayscale(all_images,0)
 ## Leemos la imagen como un numpy array
 #kk = plt.imread(dir+ref_files[0])
 #m,n = kk.shape[0:2] #get the size of the images
-#ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
+
 
 ## ---------------  PCA ANALYSIS OF FILTERERED & GRAYSCALE IMAGES ---------------  ## 
 ## Leemos la imagen desde la url
 #components = (20,40)
 # #COMENTO DESDE ACA PARA ABAJO
 # components = [40] 
-# all_size = len(all_images)
-# ref_size = len(ref_images)
+# all_size = len(all_images_gray)
+# ref_size = len(ref_images_filtered)
 # for components in [40]:
 #     ## Nos quedamos con i componentes principales
 #     pca = PCA(n_components = components)
