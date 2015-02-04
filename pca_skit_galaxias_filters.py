@@ -12,22 +12,28 @@ from skimage.filter import gaussian_filter
 
 
 ######################################################################
+# Directories 
 dir = "all/"
+dir_train = "images/train/"
+dir_all_files = "images/all_files/"
 files = os.listdir(dir)
-#print files
+
+# Old images classification...
 eliptic_files = [ elem for elem in files if "eliptica" in elem]
 spiral_files = [ elem for elem in files if "spiral" in elem]
 all_files = [ elem for elem in files ]
-
+#Old images sorting
 eliptic_files.sort()
 spiral_files.sort()
 all_files.sort()
 
-dir_elipticas = "images/elipticas_train/"
+# All Files
+all_files = os.listdir(dir_all_files)
 
-# Training images
-elipticas_train_files = os.listdir("images/elipticas_train")
-espirales_train_files = os.listdir("images/espirales_train")
+# Training images/files
+training_files = os.listdir(dir_train)
+elipticas_train_files = [ elem for elem in training_files if "elipticas_train" in elem]
+espirales_train_files = [ elem for elem in training_files if "espirales_train" in elem]
 elipticas_train_files.sort()
 espirales_train_files.sort()
 
@@ -52,7 +58,7 @@ def print_image_list(print_list):
         print
         print all_files
         print
-        print       ref_files
+        print ref_files
         print
         print all_files
     return
@@ -61,15 +67,15 @@ print_image_list(0)
 
 ## Leemos la imagen como un numpy array
 #kk = plt.imread(dir+ref_files[0])
-kk = plt.imread(dir_elipticas + elipticas_train_files[0])
+kk = plt.imread(dir_train + elipticas_train_files[0])
 m,n = kk.shape[0:2] #get the size of the images
 print "img size = %d, %d" % (m,n)
 
 ## Definiciones de tipos de imagenes
-ref_images = np.array([np.array(plt.imread(dir+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
+ref_images = np.array([np.array(plt.imread(dir_train+ref_files[i]).flatten()) for i in range(len(ref_files))],'f')
 #eliptic_images = np.array([np.array(plt.imread(dir+eliptic_files[i]).flatten()) for i in range(len(eliptic_files))],'f')
 #spiral_images = np.array([np.array(plt.imread(dir+spiral_files[i]).flatten()) for i in range(len(spiral_files))],'f')
-all_images = np.array([np.array(plt.imread(dir+all_files[i]).flatten()) for i in range(len(all_files))],'f')
+all_images = np.array([np.array(plt.imread(dir_all_files+all_files[i]).flatten()) for i in range(len(all_files))],'f')
 
 #all_images=ref_images
 
